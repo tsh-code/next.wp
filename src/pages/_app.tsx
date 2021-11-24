@@ -1,8 +1,11 @@
-import "../styles/globals.css";
-import type { AppProps } from "next/app";
+import "../styles/style.scss";
+import { AppProps } from "next/app";
+import { Layout } from "components/layout/Layout";
 
 export const MyApp = ({ Component, pageProps }: AppProps) => (
-  <Component {...pageProps} />
+  <Layout>
+    <Component {...pageProps} />
+  </Layout>
 );
 
 export default MyApp;

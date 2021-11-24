@@ -1,0 +1,24 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  line-height: 0
+}
+
+.avatar {
+  margin-right: 0.5rem;
+
+  img {
+    width: 1.875rem;
+    height: 1.875rem;
+    border-radius: 100%;
+  }
+}
+
+.name {
+  color: #464646;
+  font-size: 0.875rem;
+  line-height: 1.875rem;
+  font-style: italic;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+}

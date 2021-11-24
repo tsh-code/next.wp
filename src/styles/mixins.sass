@@ -1,0 +1,70 @@
+$gap: 32px !default
+// 960, 1152, and 1344 have been chosen because they are divisible by both 12 and 16
+$tablet: 769px !default
+// 960px container + 4rem
+$desktop: 960px + (2 * $gap) !default
+// 1152px container + 4rem
+$widescreen: 1152px + (2 * $gap) !default
+$widescreen-enabled: true !default
+// 1344px container + 4rem
+$fullhd: 1344px + (2 * $gap) !default
+$fullhd-enabled: true !default
+
+// Responsiveness
+=from($device)
+  @media screen and (min-width: $device)
+    @content
+
+=until($device)
+  @media screen and (max-width: $device - 1px)
+    @content
+
+=mobile
+  @media screen and (max-width: $tablet - 1px)
+    @content
+
+=tablet
+  @media screen and (min-width: $tablet), print
+    @content
+
+=tablet-only
+  @media screen and (min-width: $tablet) and (max-width: $desktop - 1px)
+    @content
+
+=touch
+  @media screen and (max-width: $desktop - 1px)
+    @content
+
+=desktop
+  @media screen and (min-width: $desktop)
+    @content
+
+=desktop-only
+  @if $widescreen-enabled
+    @media screen and (min-width: $desktop) and (max-width: $widescreen - 1px)
+      @content
+
+=until-widescreen
+  @if $widescreen-enabled
+    @media screen and (max-width: $widescreen - 1px)
+      @content
+
+=widescreen
+  @if $widescreen-enabled
+    @media screen and (min-width: $widescreen)
+      @content
+
+=widescreen-only
+  @if $widescreen-enabled and $fullhd-enabled
+    @media screen and (min-width: $widescreen) and (max-width: $fullhd - 1px)
+      @content
+
+=until-fullhd
+  @if $fullhd-enabled
+    @media screen and (max-width: $fullhd - 1px)
+      @content
+
+=fullhd
+  @if $fullhd-enabled
+    @media screen and (min-width: $fullhd)
+      @content

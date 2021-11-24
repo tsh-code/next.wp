@@ -1,0 +1,12 @@
+@import "styles/mixins";
+
+$section-padding: 3rem 1.5rem !default;
+$section-padding-desktop: 3rem 3rem !default;
+
+.section {
+  padding: $section-padding;
+
+  @include desktop {
+    padding: $section-padding-desktop;
+  }
+}

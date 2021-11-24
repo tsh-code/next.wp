@@ -1,0 +1,19 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Open Sans';
+  font-size: 15px;
+  background-color: #fff;
+}
+
+a {
+  color: #00d38d;
+  text-decoration: none;
+
+  &:hover {
+    color: rgba(0,211,141, 0.8);
+  }
+}

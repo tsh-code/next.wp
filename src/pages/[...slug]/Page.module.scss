@@ -1,0 +1,38 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.375rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  color: #030303;
+  text-align: center;
+  line-height: 2.75rem;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.content {
+  color: #464646;
+  line-height: 1.5625rem;
+  letter-spacing: 0;
+
+  & > p {
+    text-align: justify;
+    margin: 0 0 0.8125rem 0;
+  }
+
+  figure {
+    margin: 1.5em 0;
+  }
+
+  figcaption {
+    color: #555d66;
+    font-size: 0.8125rem;
+    text-align: center;
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+  }
+}
