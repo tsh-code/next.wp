@@ -26,6 +26,10 @@ module.exports = {
     ];
   },
   trailingSlash: true,
+  i18n: {
+    locales: ["pl"],
+    defaultLocale: "pl"
+  },
   images: {
     domains: ['skpb.org'],
   },
