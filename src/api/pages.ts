@@ -1,3 +1,5 @@
+import { AxiosRequestConfig } from "axios";
+
 import graphQL from "./graphql";
 
 export async function getPageBySlug(slug: string) {
@@ -10,6 +12,25 @@ export async function getPageBySlug(slug: string) {
       }
     }`,
     { slug }
+  );
+}
+
+export async function getPageRevisions(id: number, options?: AxiosRequestConfig): Promise<{data: {page: {revisions: {edges: {node: {databaseId: number, isPreview: boolean}}[]}}}}> {
+  return graphQL(
+    `query PostRevisions($id: ID!) {
+      page(id: $id, idType: DATABASE_ID) {
+        revisions {
+          edges {
+            node {
+              databaseId
+              isPreview
+            }
+          }
+        }
+      }
+    }`,
+    { id },
+    options
   );
 }
 

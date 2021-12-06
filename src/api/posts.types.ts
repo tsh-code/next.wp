@@ -12,6 +12,7 @@ export type Term = {
 };
 
 export type Post = {
+  id: string;
   author: { node: Author };
   date: string;
   content: string;

@@ -4,22 +4,24 @@ import { GetStaticProps } from "next";
 import Head from "next/head";
 import { ParsedUrlQuery } from "querystring";
 
-import { getPostBySlug, getPosts } from "api/posts";
+import { getPostById, getPostBySlug, getPosts } from "api/posts";
+import { Post as PostPageProps } from "api/posts.types";
+import { Post } from "components/post/Post";
+import { usePreviewModeExit } from "hooks/usePreviewModeExit";
 import { MAX_PAGINATION_SIZE } from "utils/constants";
 
-import { PostProps } from "components/post/Post.types";
-import { Post } from "components/post/Post";
+const PostPage = (post: PostPageProps) => {
+  usePreviewModeExit();
 
-type PostPageProps = PostProps["post"];
-
-const PostPage = (post: PostPageProps) => (
-  <>
-    <Head>
-      <title>{post.title}</title>
-    </Head>
-    <Post post={post} isExcerpt={false} />
-  </>
-);
+  return (
+    <>
+      <Head>
+        <title>{post.title}</title>
+      </Head>
+      <Post post={post} isExcerpt={false} />
+    </>
+  );
+};
 
 export default PostPage;
 
@@ -30,14 +32,29 @@ interface Params extends ParsedUrlQuery {
   slug: string;
 }
 
-export const getStaticProps: GetStaticProps<PostPageProps, Params> = async ({ params }) => {
-  if (!params || !params.slug) {
+type PreviewData = {
+  id: number;
+  headers: { "X-WP-Nonce": string; Cookie: string };
+};
+
+export const getStaticProps: GetStaticProps<PostPageProps, Params, PreviewData> = async (ctx) => {
+  if (ctx.preview && ctx.previewData) {
+    const { id, headers } = ctx.previewData;
+
+    const {
+      data: { post: post },
+    } = await getPostById(id, { headers });
+
+    return { props: post };
+  }
+
+  if (!ctx.params || !ctx.params.slug) {
     return { notFound: true };
   }
 
   const {
     data: { post: props },
-  } = await getPostBySlug(params.slug);
+  } = await getPostBySlug(ctx.params.slug);
 
   return { props };
 };

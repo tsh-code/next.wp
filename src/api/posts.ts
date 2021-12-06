@@ -1,7 +1,9 @@
+import { AxiosRequestConfig } from "axios";
+
 import graphQL from "./graphql";
 import { Post } from "./posts.types";
 
-export async function getPostBySlug(slug: string) {
+export async function getPostBySlug(slug: string): Promise<{data: {post: Post}}> {
   return graphQL(
     `query PostBySlug($slug: ID!) {
       post(id: $slug, idType: SLUG) {
@@ -14,6 +16,7 @@ export async function getPostBySlug(slug: string) {
             }
           }
         }
+        id
         title
         content(format: RENDERED)
         slug
@@ -40,10 +43,70 @@ export async function getPostBySlug(slug: string) {
   );
 }
 
+export async function getPostRevisions(id: number, options?: AxiosRequestConfig): Promise<{data: {post: {revisions: {edges: {node: {databaseId: number, isPreview: boolean}}[]}}}}> {
+  return graphQL(
+    `query PostRevisions($id: ID!) {
+      post(id: $id, idType: DATABASE_ID) {
+        revisions {
+          edges {
+            node {
+              databaseId
+              isPreview
+            }
+          }
+        }
+      }
+    }`,
+    { id },
+    options
+  );
+}
+
+export async function getPostById(id: number, options?: AxiosRequestConfig): Promise<{data: {post: Post}}> {
+  return graphQL(
+    `query PostById($id: ID!) {
+      post(id: $id, idType: DATABASE_ID) {
+        author {
+          node {
+            name
+            slug
+            avatar {
+              url
+            }
+          }
+        }
+        id
+        title
+        content(format: RENDERED)
+        slug
+        date
+        tags {
+          edges {
+            node {
+              name
+              slug
+            }
+          }
+        }
+        categories {
+          edges {
+            node {
+              name
+              slug
+            }
+          }
+        }
+      }
+    }`,
+    { id },
+    options
+  );
+}
+
 type PostsResponse<T extends object = {}> = {
   data: {
     posts: {
-      edges: { node: Post & { id: string } }[],
+      edges: { node: Post }[],
       pageInfo: { offsetPagination: { total: number }}
     }
   } & T

@@ -31,6 +31,6 @@ module.exports = {
     defaultLocale: "pl"
   },
   images: {
-    domains: ['skpb.org'],
+    domains: [process.env.WP_DOMAIN, "secure.gravatar.com"],
   },
 };

@@ -6,12 +6,14 @@ import Image from "next/image";
 import { ParsedUrlQuery } from "querystring";
 
 import { getPageBySlug, getPages } from "api/pages";
-import { PostProps } from "components/post/Post.types";
+import { getPostById } from "api/posts";
+import { Post } from "api/posts.types";
+import { usePreviewModeExit } from "hooks/usePreviewModeExit";
 import { MAX_PAGINATION_SIZE } from "utils/constants";
 
 import styles from "./Page.module.scss";
 
-type PageProps = Pick<PostProps["post"], "title" | "slug" | "content">;
+type PageProps = Pick<Post, "title" | "slug" | "content">;
 
 const figureParserOptions: HTMLReactParserOptions = {
   replace: (domNode) => {
@@ -24,7 +26,7 @@ const figureParserOptions: HTMLReactParserOptions = {
   },
 };
 
-const Page = (post: PageProps) => {
+const Page = (page: PageProps) => {
   const options: HTMLReactParserOptions = {
     replace: (domNode) => {
       if (domNode instanceof Element && domNode.name === "figure" && domNode.attribs.class.includes("wp-block-image")) {
@@ -33,16 +35,18 @@ const Page = (post: PageProps) => {
     },
   };
 
+  usePreviewModeExit();
+
   return (
     <>
       <Head>
-        <title>{post.title}</title>
+        <title>{page.title}</title>
       </Head>
       <article>
         <header className={styles.header}>
-          <h1 className={styles.title}>{post.title}</h1>
+          <h1 className={styles.title}>{page.title}</h1>
         </header>
-        <div className={styles.content}>{parseHTML(post.content, options)}</div>
+        <div className={styles.content}>{parseHTML(page.content, options)}</div>
       </article>
     </>
   );
@@ -54,14 +58,29 @@ interface Params extends ParsedUrlQuery {
   slug: string[];
 }
 
-export const getStaticProps: GetStaticProps<PageProps, Params> = async ({ params }) => {
-  if (!params || !params.slug) {
+type PreviewData = {
+  id: number;
+  headers: { "X-WP-Nonce": string; Cookie: string };
+};
+
+export const getStaticProps: GetStaticProps<PageProps, Params, PreviewData> = async (ctx) => {
+  if (ctx.preview && ctx.previewData) {
+    const { id, headers } = ctx.previewData;
+
+    const {
+      data: { post: page },
+    } = await getPostById(id, { headers });
+
+    return { props: page };
+  }
+
+  if (!ctx.params || !ctx.params.slug) {
     return { notFound: true };
   }
 
   const {
     data: { pageBy: props },
-  } = await getPageBySlug(params.slug.join("/"));
+  } = await getPageBySlug(ctx.params.slug.join("/"));
 
   return { props };
 };
