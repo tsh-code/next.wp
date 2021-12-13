@@ -23,36 +23,7 @@ const AuthorArchive = ({ author, ...props }: AuthorArchiveProps) => (
 
 export default AuthorArchive;
 
-export const getStaticPaths = async () => {
-  const {
-    data: {
-      users: { edges },
-    },
-  } = await getAllUsers(MAX_PAGINATION_SIZE);
-  const paths = await edges
-    .map(({ node: { slug } }) => slug)
-    .reduce(async (acc: Promise<{ params: { slug: string; page: string } }[]>, slug: string) => {
-      const {
-        data: {
-          posts: {
-            pageInfo: {
-              offsetPagination: { total },
-            },
-          },
-        },
-      } = await getPostsByAuthor(slug, 1, POSTS_PER_PAGE);
-      const totalPages = Math.ceil(total / POSTS_PER_PAGE);
-
-      return [
-        ...(await acc),
-        ...Array.from({ length: totalPages }, (_, i) => ({
-          params: { slug, page: (i + 1).toString() },
-        })),
-      ];
-    }, Promise.resolve([]));
-
-  return { paths, fallback: false };
-};
+export const getStaticPaths = async () => ({ paths: [], fallback: "blocking" });
 
 interface Params extends ParsedUrlQuery {
   slug: string;
@@ -80,15 +51,17 @@ export const getStaticProps: GetStaticProps<AuthorArchiveProps, Params> = async 
   } = await getPostsByAuthor(slug, page, POSTS_PER_PAGE);
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
 
-  return {
-    props: {
-      author: user.name,
-      posts: edges.map(({ node }) => node),
-      pagination: {
-        currentPage: page,
-        totalPages,
-        href: `/author/${slug}/`,
-      },
-    },
-  };
+  return edges.length > 0
+    ? {
+        props: {
+          author: user.name,
+          posts: edges.map(({ node }) => node),
+          pagination: {
+            currentPage: page,
+            totalPages,
+            href: `/author/${slug}/`,
+          },
+        },
+      }
+    : { notFound: true };
 };

@@ -7,25 +7,7 @@ import { POSTS_PER_PAGE } from "utils/constants";
 
 export default ArchivesPage;
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const {
-    data: {
-      posts: {
-        pageInfo: {
-          offsetPagination: { total },
-        },
-      },
-    },
-  } = await getPosts(1, POSTS_PER_PAGE);
-  const totalPages = Math.ceil(total / POSTS_PER_PAGE);
-
-  return {
-    paths: Array.from({ length: totalPages }, (_, i) => ({
-      params: { page: (i + 1).toString() },
-    })),
-    fallback: false,
-  };
-};
+export const getStaticPaths: GetStaticPaths = async () => ({ paths: [], fallback: "blocking" });
 
 export const getStaticProps = async ({
   params,
@@ -47,10 +29,12 @@ export const getStaticProps = async ({
   } = await getPosts(page, POSTS_PER_PAGE);
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
 
-  return {
-    props: {
-      posts: edges.map(({ node }) => node),
-      pagination: { currentPage: page, totalPages, href: "/" },
-    },
-  };
+  return edges.length > 0
+    ? {
+        props: {
+          posts: edges.map(({ node }) => node),
+          pagination: { currentPage: page, totalPages, href: "/" },
+        },
+      }
+    : { notFound: true };
 };
