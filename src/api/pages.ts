@@ -17,7 +17,7 @@ export async function getPageBySlug(slug: string) {
 
 export async function getPageRevisions(id: number, options?: AxiosRequestConfig): Promise<{data: {page: {revisions: {edges: {node: {databaseId: number, isPreview: boolean}}[]}}}}> {
   return graphQL(
-    `query PostRevisions($id: ID!) {
+    `query PageRevisions($id: ID!) {
       page(id: $id, idType: DATABASE_ID) {
         revisions {
           edges {
